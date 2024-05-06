@@ -4,28 +4,38 @@ from tensorflow.keras.models import load_model
 import cv2
 import imutils
 from pathlib import Path
+from PIL import Image
+from scipy.io import savemat
 
 basePath = Path(__file__).parent
 filePath = (f"{basePath}")
 
 
-def load_image(path, image_size):
-    image_width, image_height = image_size
-
+def loadImage(path, imageSize):
+    imageWidth, imageHeight = imageSize
     # load the image
     image = cv2.imread(path)
-
     # crop the brain and ignore the unnecessary rest part of the image
-    image = crop_brain_contour(image)
+    image = cropBrainContour(image)
     # resize image
-    image = cv2.resize(image, dsize=(image_width, image_height), interpolation=cv2.INTER_CUBIC)
+    image = cv2.resize(image, dsize=(imageWidth, imageHeight), interpolation=cv2.INTER_CUBIC)
     # normalize values
     image = image / 255.
 
     return image
 
+def preprocess(image, imageSize):
+    imageWidth, imageHeight = imageSize
+    # crop the brain and ignore the unnecessary rest part of the image
+    image = cropBrainContour(image)
+    # resize image
+    image = cv2.resize(image, dsize=(imageWidth, imageHeight), interpolation=cv2.INTER_CUBIC)
+    # normalize values
+    image = image / 255.
 
-def crop_brain_contour(image):
+    return image
+
+def cropBrainContour(image):
     # Convert the image to grayscale, and blur it slightly
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     gray = cv2.GaussianBlur(gray, (5, 5), 0)
@@ -53,19 +63,17 @@ def crop_brain_contour(image):
     return new_image
 
 
-def predict():
+def predict(file):
     modelpath = f"{basePath}/simplecnn-kagglebrain"
-    print(f"modelpath: {modelpath}")
 
     model = load_model(modelpath)
 
-    filename = 'aug_Y2_0_9816'
+    pilImage = Image.open(file)
+    npImage = np.array(pilImage)
 
-    path = f"{basePath}/{filename}.jpg"
+    processedImage = preprocess(npImage, (240, 240))
 
-    image = load_image(path, (240, 240))
-
-    X = np.array(image)
+    X = np.array(processedImage)
     X = np.expand_dims(X, 0)
 
     t0 = time.time()

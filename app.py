@@ -23,7 +23,7 @@ def getPrediction():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             res = predict(file)
-            return f"{res}"
+            return f"{res[0][0]}"
 
 
 if __name__ == "__main__":

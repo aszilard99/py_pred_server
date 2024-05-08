@@ -1,11 +1,12 @@
+import io
 import time
 import numpy as np
 from tensorflow.keras.models import load_model
 import cv2
 import imutils
 from pathlib import Path
+import locale
 from PIL import Image
-from scipy.io import savemat
 
 basePath = Path(__file__).parent
 filePath = (f"{basePath}")
@@ -63,15 +64,16 @@ def cropBrainContour(image):
     return new_image
 
 
-def predict(file):
+def predict(imageFile):
     modelpath = f"{basePath}/simplecnn-kagglebrain"
+    locale.getdefaultlocale()
 
     model = load_model(modelpath)
 
-    pilImage = Image.open(file)
-    npImage = np.array(pilImage)
+    jpg = Image.open(imageFile)
+    pixelArray = np.array(jpg)
 
-    processedImage = preprocess(npImage, (240, 240))
+    processedImage = preprocess(pixelArray, (240, 240))
 
     X = np.array(processedImage)
     X = np.expand_dims(X, 0)

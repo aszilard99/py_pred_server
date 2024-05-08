@@ -1,6 +1,7 @@
 from flask import Flask, flash, request, redirect
 from InferenceService import predict
 app = Flask(__name__)
+app.secret_key = "super secret key"
 
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 def allowed_file(filename):

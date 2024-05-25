@@ -78,12 +78,7 @@ def predict(imageFile):
     X = np.array(processedImage)
     X = np.expand_dims(X, 0)
 
-    t0 = time.time()
     pred = model.predict(X)
-    t1 = time.time()
-
-    print(f'time {t1 - t0}')
-    print(f'pred {pred}')
 
     return pred
 

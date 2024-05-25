@@ -1,9 +1,10 @@
 from flask import Flask, flash, request, redirect
 from InferenceService import predict
+
 app = Flask(__name__)
 app.secret_key = "super secret key"
 
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg'}
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -21,9 +22,13 @@ def getPrediction():
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
-        if file and allowed_file(file.filename):
-            res = predict(file)
-            return f"{res[0][0]}"
+        if file:
+            if allowed_file(file.filename):
+                res = predict(file)
+                return f"{res[0][0]}"
+            else:
+                flash('File extension not allowed')
+                return "File extension is not supported", 422
 
 
 if __name__ == "__main__":

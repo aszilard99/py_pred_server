@@ -7,6 +7,7 @@ import imutils
 from pathlib import Path
 import locale
 from PIL import Image
+import random
 
 basePath = Path(__file__).parent
 filePath = (f"{basePath}")
@@ -80,6 +81,40 @@ def predict(imageFile):
 
     pred = model.predict(X)
 
-    return pred
+    return pred[0][0]
 
+def validateImage(imageFile):
+    jpg = Image.open(imageFile)
+    pixelArray = np.array(jpg)
 
+    isValidImageSize(imageFile)
+
+    print(pixelArray)
+
+def isValidImageSize(imageFile):
+    try:
+        jpg = Image.open(imageFile)
+        pixelArray = np.array(jpg)
+        shape = pixelArray.shape
+        if shape[0] >= 50 and shape[1] >= 50 and shape[2] == 3:
+            return True
+    except:
+        return False
+
+def isImageGrayscale(imageFile):
+    jpg = Image.open(imageFile)
+    pixelArray = np.array(jpg)
+    shape = pixelArray.shape
+    rows = shape[0]
+    cols = shape[1]
+
+    testingPoints = min(max((rows * cols) / 100, 30), 50)
+
+    for i in range(int(testingPoints)):
+        row = random.randrange(0, rows, 1)
+        col = random.randrange(0, cols, 1)
+
+        if (pixelArray[row][col][0] != pixelArray[row][col][1] or pixelArray[row][col][1] != pixelArray[row][col][2]):
+            return False
+
+    return True

@@ -1,5 +1,5 @@
 from flask import Flask, flash, request, redirect
-from InferenceService import predict
+from InferenceService import predict, isImageGrayscale, isValidImageSize
 
 app = Flask(__name__)
 app.secret_key = "super secret key"
@@ -24,8 +24,12 @@ def getPrediction():
             return redirect(request.url)
         if file:
             if allowed_file(file.filename):
+                if not isValidImageSize(file):
+                    return "Image resolution too small, it has to be atleast 50x50x3", 472
+                if not isImageGrayscale(file):
+                    return "Image has to be grayscale", 415
                 res = predict(file)
-                return f"{res[0][0]}"
+                return f"{res}"
             else:
                 flash('File extension not allowed')
                 return "File extension is not supported", 422

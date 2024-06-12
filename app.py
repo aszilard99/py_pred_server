@@ -26,8 +26,6 @@ def getPrediction():
             if allowed_file(file.filename):
                 if not isValidImageSize(file):
                     return "Image resolution too small, it has to be atleast 50x50x3", 472
-                if not isImageGrayscale(file):
-                    return "Image has to be grayscale", 415
                 res = predict(file)
                 return f"{res}"
             else:

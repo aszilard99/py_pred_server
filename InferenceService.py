@@ -12,6 +12,9 @@ import random
 basePath = Path(__file__).parent
 filePath = (f"{basePath}")
 
+modelpath = f"{basePath}/complex-cnn-kaggle_dataset.pb"
+locale.getdefaultlocale()
+model = load_model(modelpath)
 
 def loadImage(path, imageSize):
     imageWidth, imageHeight = imageSize
@@ -33,7 +36,7 @@ def preprocess(image, imageSize):
     # resize image
     image = cv2.resize(image, dsize=(imageWidth, imageHeight), interpolation=cv2.INTER_CUBIC)
     # normalize values
-    image = image / 255.
+    #image = image / 255.
 
     return image
 
@@ -66,15 +69,10 @@ def cropBrainContour(image):
 
 
 def predict(imageFile):
-    modelpath = f"{basePath}/simplecnn-kagglebrain"
-    locale.getdefaultlocale()
-
-    model = load_model(modelpath)
-
     jpg = Image.open(imageFile)
     pixelArray = np.array(jpg)
 
-    processedImage = preprocess(pixelArray, (240, 240))
+    processedImage = preprocess(pixelArray, (512, 512))
 
     X = np.array(processedImage)
     X = np.expand_dims(X, 0)
